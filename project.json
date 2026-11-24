@@ -1,0 +1,8 @@
+{
+	"name": "zfs",
+	"title": "zettaflow.studio",
+	"domain": "zettaflow.studio.local",
+	"portBase": 30000,
+	"database": "zfs",
+	"postgresMajor": 19
+}

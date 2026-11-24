@@ -1,0 +1,12 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Node",
+	"extends": "./base.json",
+	"compilerOptions": {
+		"lib": ["esnext"],
+		// Web globals (fetch, Request, Response, Headers, URL) come from
+		// @types/node via undici, not from the DOM lib, which server-side
+		// packages must not pull in.
+		"types": ["node"]
+	}
+}

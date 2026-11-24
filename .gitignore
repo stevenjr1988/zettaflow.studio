@@ -1,0 +1,21 @@
+node_modules/
+.next/
+next-env.d.ts
+out/
+dist/
+.turbo/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+coverage/
+.notes
+caddy.exe
+
+# Dev-only Postgres: portable binaries and the local cluster (pnpm db:init).
+.tools/
+.pgdata/
+
+# Local only, never committed: personal Claude instructions and private notes.
+CLAUDE.local.md
+.private/

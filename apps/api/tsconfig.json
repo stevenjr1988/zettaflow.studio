@@ -1,0 +1,4 @@
+{
+	"extends": "@zfs/tsconfig/node.json",
+	"include": ["src", "drizzle.config.ts", "tsup.config.ts"]
+}

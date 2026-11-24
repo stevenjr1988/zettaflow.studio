@@ -1,0 +1,31 @@
+{
+	"name": "zfs",
+	"private": true,
+	"license": "UNLICENSED",
+	"type": "module",
+	"packageManager": "pnpm@12.21.0",
+	"engines": {
+		"node": ">=26.8.2"
+	},
+	"scripts": {
+		"zfs:new": "node .zfs/new-project.mjs",
+		"dev": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 start && pnpm db:studio",
+		"stop": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 stop",
+		"status": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 status",
+		"dev:restart": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 restart",
+		"db:init": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 db-init",
+		"db:generate": "pnpm --filter @zfs/api db:generate",
+		"db:migrate": "pnpm --filter @zfs/api db:migrate",
+		"db:studio": "pnpm --filter @zfs/api db:studio",
+		"build": "turbo run build",
+		"typecheck": "turbo run typecheck",
+		"lint": "biome check .",
+		"format": "biome check --write ."
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.6.8",
+		"@types/node": "^26.6.6",
+		"turbo": "^2.11.13",
+		"typescript": "^7.0.2"
+	}
+}

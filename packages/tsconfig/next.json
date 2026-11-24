@@ -1,0 +1,15 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Next.js",
+	"extends": "./base.json",
+	"compilerOptions": {
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"jsx": "react-jsx",
+		"allowJs": true,
+		"incremental": true,
+		"plugins": [{ "name": "next" }]
+	}
+	// NOTE: "paths" and "include" live in the app's own tsconfig. Relative paths
+	// in an extended config resolve against the file that declares them, so
+	// "@/*": ["./src/*"] here would point into packages/tsconfig/src.
+}

@@ -1,0 +1,12 @@
+packages:
+  - apps/*
+  - packages/*
+
+allowBuilds:
+  esbuild: true
+
+# Supply-chain guard: never install a version published less than a day ago
+# (hijacked releases are usually caught and pulled within hours). Strict: pnpm
+# fails/asks instead of silently adding minimumReleaseAgeExclude entries.
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true

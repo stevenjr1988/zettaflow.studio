@@ -1,0 +1,36 @@
+# DEV ONLY. Production uses nginx with the same routing.
+#
+# Nothing here is project-specific: domain and ports come from project.json.
+# `pnpm dev` (dev.ps1) writes them to .tools/caddy.env and starts Caddy with
+# `--envfile .tools/caddy.env`:
+#   ZFS_DOMAIN    project.json "domain"         e.g. zettaflow.studio.local
+#   ZFS_API_PORT  project.json "portBase"       e.g. 30000
+#   ZFS_WWW_PORT  project.json "portBase" + 1   e.g. 30001
+# Running caddy.exe by hand without that file will fail; use `pnpm dev`.
+#
+# Needs two lines in C:\Windows\System32\drivers\etc\hosts:
+#   127.0.0.1  <domain>
+#   127.0.0.1  api.<domain>
+#
+# www forwards /_api_/* to the api itself (server to server, on 127.0.0.1), so
+# api.<domain> is only for native clients and tools.
+{
+	# Serve real HTTPS from Caddy's own local CA, but never touch the Windows
+	# trust store - so no certificate-install dialog, ever. Browsers show a
+	# "not private" warning until you click through once.
+	# `./caddy.exe trust` removes the warning.
+	skip_install_trust
+}
+
+# --- api ---------------------------------------------------------------------
+https://api.{$ZFS_DOMAIN} {
+	# Explicit: without this Caddy would try ACME, which cannot issue for .local
+	tls internal
+	reverse_proxy 127.0.0.1:{$ZFS_API_PORT}
+}
+
+# --- www ---------------------------------------------------------------------
+https://{$ZFS_DOMAIN} {
+	tls internal
+	reverse_proxy 127.0.0.1:{$ZFS_WWW_PORT}
+}
