@@ -92,6 +92,8 @@ with `pg`, PostgreSQL, Biome, tsup (api build), tsx (api dev).
 are written. Everything reads it: `dev.ps1`, the Caddyfile (`ZFS_*` values that
 `dev.ps1` writes to `.tools/caddy.env`, loaded with `caddy run --envfile`),
 `.zfs/next.mjs` (www port), the api and www. Never hard-code them elsewhere.
+The one copy is the `zfs:project` block in the root `CLAUDE.md`, which
+`pnpm zfs:new` regenerates from `project.json`; never edit it by hand.
 Never put `;` in a `dev.ps1` pane command: `wt.exe` splits on it.
 
 One block of ten ports from `portBase`, the same in dev and prod:

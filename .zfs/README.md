@@ -35,7 +35,9 @@ pnpm zfs:new
 It asks a few questions and does the rest:
 
 1. **Project values** — short name, title, dev domain, port block, database
-   name — written to `project.json`.
+   name — written to `project.json`, and to the generated block in the root
+   `CLAUDE.md` (and the `README.md` title), so Claude sees this project's
+   values, not the skeleton's.
 2. **Git remotes** — renames the skeleton remote from `origin` to `upstream`
    (so you can pull skeleton updates later) and adds your own repo as
    `origin`.

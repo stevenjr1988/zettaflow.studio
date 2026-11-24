@@ -135,6 +135,46 @@ say(
 	`  wrote project.json (api ${portBase}, www ${portBase + 1}, postgres ${portBase + 9})`,
 );
 
+// The root CLAUDE.md holds a generated block with these values, so Claude in
+// a new project never sees the skeleton's (or a previous project's) values.
+const BLOCK_START =
+	"<!-- zfs:project - written by `pnpm zfs:new` from project.json; don't edit by hand -->";
+const BLOCK_END = "<!-- /zfs:project -->";
+const projectBlock = [
+	BLOCK_START,
+	`- **Project:** ${title} (\`${name}\`)`,
+	`- **Ports:** api ${portBase}, www ${portBase + 1}, Postgres ${portBase + 9} (\`portBase\` ${portBase}).`,
+	`- **Database:** \`${database}\`, role \`${name}\`. Session cookie: \`${name}_session\`.`,
+	`- **Dev domains:** \`${domain}\` / \`api.${domain}\`.`,
+	BLOCK_END,
+].join("\n");
+
+const claudeFile = join(root, "CLAUDE.md");
+const claudeText = existsSync(claudeFile)
+	? readFileSync(claudeFile, "utf8")
+	: "# CLAUDE.md\n\n@.zfs/CLAUDE.md\n\n## This project\n";
+const blockStart = claudeText.indexOf("<!-- zfs:project");
+const blockEnd = claudeText.indexOf(BLOCK_END);
+const newClaudeText =
+	blockStart >= 0 && blockEnd > blockStart
+		? claudeText.slice(0, blockStart) +
+			projectBlock +
+			claudeText.slice(blockEnd + BLOCK_END.length)
+		: `${claudeText.trimEnd()}\n\n${projectBlock}\n`;
+writeFileSync(claudeFile, newClaudeText);
+say("  wrote the project block in CLAUDE.md");
+
+// README.md: retitle it while it still carries the previous title.
+const readmeFile = join(root, "README.md");
+if (existsSync(readmeFile)) {
+	const readme = readFileSync(readmeFile, "utf8");
+	const oldHeading = `# ${current.title}\n`;
+	if (readme.startsWith(oldHeading) && current.title !== title) {
+		writeFileSync(readmeFile, `# ${title}\n${readme.slice(oldHeading.length)}`);
+		say("  retitled README.md");
+	}
+}
+
 // --- 2. Git remotes --------------------------------------------------------
 
 heading("Git");
