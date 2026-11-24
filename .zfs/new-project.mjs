@@ -164,13 +164,18 @@ const newClaudeText =
 writeFileSync(claudeFile, newClaudeText);
 say("  wrote the project block in CLAUDE.md");
 
-// README.md: retitle it while it still carries the previous title.
+// README.md: retitle it while it is still the skeleton's placeholder README.
 const readmeFile = join(root, "README.md");
 if (existsSync(readmeFile)) {
 	const readme = readFileSync(readmeFile, "utf8");
-	const oldHeading = `# ${current.title}\n`;
-	if (readme.startsWith(oldHeading) && current.title !== title) {
-		writeFileSync(readmeFile, `# ${title}\n${readme.slice(oldHeading.length)}`);
+	const isPlaceholder = readme.includes("replace it with your own.");
+	const headingEnd = readme.indexOf("\n");
+	if (
+		isPlaceholder &&
+		readme.startsWith("# ") &&
+		readme.slice(2, headingEnd) !== title
+	) {
+		writeFileSync(readmeFile, `# ${title}${readme.slice(headingEnd)}`);
 		say("  retitled README.md");
 	}
 }
