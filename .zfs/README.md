@@ -39,7 +39,7 @@ It asks a few questions and does the rest:
    Node major or a missing pnpm/git stops it unless you say continue.
 1. **Project values**: title (`Zetta Flow Studio`), short name (an
    abbreviation such as `zfs`), production domain, dev domain (default
-   `<name>.localhost`),
+   `<production domain>.localhost`),
    port block and database name. They are written to `project.json`, to the
    generated block in the root `CLAUDE.md` and to the `README.md` title, so
    Claude sees this project's values, not the skeleton's.
@@ -58,7 +58,10 @@ It asks a few questions and does the rest:
    database and writes `DATABASE_URL` to `apps/api/.env`).
 
 Then `pnpm dev`. Running `pnpm zfs:init` again is safe; it shows your current
-values as defaults.
+values as defaults. Each answer is saved as you give it (`.tools/init.json`),
+so if you stop halfway, the next run offers those answers as defaults.
+`pnpm zfs:reset` (same as `pnpm zfs:init --reset`) starts over with defaults
+from the folder name.
 
 ### The manual way
 
@@ -71,15 +74,15 @@ values as defaults.
    ```
 3. Edit **`project.json`** — the only file you change for this:
 
-   | Field           | Meaning                                                                                                                |
-   | --------------- | ---------------------------------------------------------------------------------------------------------------------- |
-   | `name`          | short lowercase name: Postgres role, terminal pane titles, session cookie prefix                                       |
-   | `title`         | human name: page title, API docs title                                                                                 |
-   | `devDomain`     | dev domain served by Caddy (`https://<devDomain>`, `https://api.<devDomain>`)                                          |
-   | `prodDomain`    | real public domain (`https://<prodDomain>`, `https://api.<prodDomain>`), served by nginx in prod                       |
-   | `portBase`      | start of a block of 10 ports: api = +0, www = +1, Drizzle Studio = +8, Postgres = +9. Must not overlap another project |
-   | `database`      | Postgres database name                                                                                                 |
-   | `postgresMajor` | Postgres major version the binaries in `.tools/pgsql` must match                                                       |
+   | Field           | Meaning                                                                                                                                                                                                                                                                        |
+   | --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+   | `name`          | short lowercase name: Postgres role, terminal pane titles, session cookie prefix                                                                                                                                                                                               |
+   | `title`         | human name: page title, API docs title                                                                                                                                                                                                                                         |
+   | `devDomain`     | dev domain served by Caddy (`https://<devDomain>`, `https://api.<devDomain>`)                                                                                                                                                                                                  |
+   | `prodDomain`    | real public domain (`https://<prodDomain>`, `https://api.<prodDomain>`), served by nginx in prod                                                                                                                                                                               |
+   | `portBase`      | start of a block of 10 ports, a multiple of 10 from 1030 to 49140: api = +0, www = +1, Drizzle Studio = +8, Postgres = +9. Projects running at the same time need different blocks; avoid Windows-reserved ranges (`netsh interface ipv4 show excludedportrange protocol=tcp`) |
+   | `database`      | Postgres database name                                                                                                                                                                                                                                                         |
+   | `postgresMajor` | Postgres major version the binaries in `.tools/pgsql` must match                                                                                                                                                                                                               |
 
 4. Add to `C:\Windows\System32\drivers\etc\hosts` (as admin):
 

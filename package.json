@@ -9,6 +9,7 @@
 	},
 	"scripts": {
 		"zfs:init": "node .zfs/init.mjs",
+		"zfs:reset": "node .zfs/init.mjs --reset",
 		"dev": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 start && pnpm db:studio",
 		"stop": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 stop",
 		"status": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 status",

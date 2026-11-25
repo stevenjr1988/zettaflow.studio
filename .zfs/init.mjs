@@ -13,6 +13,7 @@ import {
 	existsSync,
 	mkdirSync,
 	readFileSync,
+	rmSync,
 	statSync,
 	writeFileSync,
 } from "node:fs";
@@ -189,54 +190,143 @@ say(
 const folder = basename(root);
 const isSkeletonDefaults = current.name === "zfs";
 
-const title = await ask(
-	"Title - the full human name, shown as page title and API docs title\n  (e.g. Zetta Flow Studio)",
-	isSkeletonDefaults ? folder : current.title,
+// Each answer is saved to .tools/init.json (git-ignored) as soon as it is
+// given, so a run stopped halfway offers those answers as the defaults next
+// time. project.json is only written once every question is answered.
+// `pnpm zfs:init --reset` (or `pnpm zfs:reset`) starts over: saved answers
+// are dropped and the defaults come from the folder name again.
+const reset = process.argv.includes("--reset");
+const draftFile = join(root, ".tools", "init.json");
+if (reset && existsSync(draftFile)) {
+	rmSync(draftFile);
+}
+const draft = existsSync(draftFile)
+	? JSON.parse(readFileSync(draftFile, "utf8"))
+	: {};
+const fresh = isSkeletonDefaults || reset;
+if (reset) {
+	say("Starting over: defaults come from the folder name, not saved answers.");
+} else if (Object.keys(draft).length > 0) {
+	say(
+		"Resuming: your answers from the last (unfinished) run are the defaults.\nTo start over instead: pnpm zfs:init --reset",
+	);
+}
+// Saved answer, else a fresh default, else the project's current value.
+const pick = (key, freshDefault, currentValue = current[key]) =>
+	draft[key] ?? (fresh ? freshDefault : (currentValue ?? freshDefault));
+const remember = (key, value) => {
+	draft[key] = value;
+	mkdirSync(dirname(draftFile), { recursive: true });
+	writeFileSync(draftFile, `${JSON.stringify(draft, null, "\t")}\n`);
+	return value;
+};
+
+const title = remember(
+	"title",
+	await ask(
+		"Title - the full human name, shown as page title and API docs title\n  (e.g. Zetta Flow Studio)",
+		pick("title", folder),
+	),
 );
-const name = await ask(
-	"Short name - an abbreviation used for the Postgres role, terminal pane titles\n  and the session cookie prefix (e.g. zfs for Zetta Flow Studio)",
-	isSkeletonDefaults ? abbreviate(title) : current.name,
-	(v) => /^[a-z][a-z0-9_]{0,30}$/.test(v),
-	"lowercase letters, digits and _, starting with a letter, max 31 chars",
+const name = remember(
+	"name",
+	await ask(
+		"Short name - an abbreviation used for the Postgres role, terminal pane titles\n  and the session cookie prefix (e.g. zfs for Zetta Flow Studio)",
+		pick("name", abbreviate(title)),
+		(v) => /^[a-z][a-z0-9_]{0,30}$/.test(v),
+		"lowercase letters, digits and _, starting with a letter, max 31 chars",
+	),
 );
 const isHostname = (v) =>
 	/^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)+$/.test(v);
-const hyphenName = name.replaceAll("_", "-");
-const prodDomain = await ask(
-	"Production domain - the real public domain (api.<domain> for the api)",
-	current.prodDomain ||
-		(isHostname(folder.toLowerCase())
-			? folder.toLowerCase()
-			: `${hyphenName}.com`),
-	isHostname,
-	"a hostname like example.com",
-);
-// `domain` is the key used before devDomain/prodDomain existed.
-const devDomain = await ask(
-	"Dev domain - local hostname Caddy serves www on (api.<domain> for the api).\n  Anything works; *.localhost needs no hosts-file entry for browsers",
-	isSkeletonDefaults
-		? `${hyphenName}.localhost`
-		: (current.devDomain ?? current.domain),
-	(v) => isHostname(v) && v !== prodDomain,
-	"a hostname with at least one dot, like myapp.localhost - not the production domain",
-);
-const portBase = Number(
+// A fresh clone defaults to the folder name (omegarealty.media) when it looks
+// like a domain, never to the skeleton's own production domain.
+const folderDomain = folder.toLowerCase();
+const prodDomain = remember(
+	"prodDomain",
 	await ask(
-		"Port block start - a multiple of 10, must not overlap another project\n  (api = +0, www = +1, Drizzle Studio = +8, Postgres = +9)",
-		isSkeletonDefaults ? current.portBase + 10 : current.portBase,
-		(v) =>
-			/^\d+$/.test(v) &&
-			Number(v) % 10 === 0 &&
-			Number(v) >= 1024 &&
-			Number(v) <= 65520,
-		"a multiple of 10 between 1024 and 65520",
+		"Production domain - the real public domain (api.<domain> for the api)",
+		pick(
+			"prodDomain",
+			isHostname(folderDomain)
+				? folderDomain
+				: `${name.replaceAll("_", "-")}.com`,
+		),
+		isHostname,
+		"a hostname like example.com",
 	),
 );
-const database = await ask(
-	"Postgres database name",
-	isSkeletonDefaults ? name : current.database,
-	(v) => /^[a-z][a-z0-9_]{0,62}$/.test(v),
-	"lowercase letters, digits and _, starting with a letter",
+// `domain` is the key used before devDomain/prodDomain existed.
+const devDomain = remember(
+	"devDomain",
+	await ask(
+		"Dev domain - local hostname Caddy serves www on (api.<domain> for the api).\n  Type it in full; nothing is added. *.localhost needs no hosts-file entry",
+		pick(
+			"devDomain",
+			`${prodDomain}.localhost`,
+			current.devDomain ?? current.domain,
+		),
+		(v) => isHostname(v) && v !== prodDomain,
+		`can't be the production domain (${prodDomain}) - this PC would stop reaching the live site.\n  Use something like ${prodDomain}.localhost`,
+	),
+);
+
+// Port ranges Windows has reserved (Hyper-V, WSL, Docker). Nothing can listen
+// in them, so a block overlapping one fails with an access error.
+const reservedPorts =
+	process.platform === "win32"
+		? [
+				...(
+					spawnSync(
+						"netsh",
+						["interface", "ipv4", "show", "excludedportrange", "protocol=tcp"],
+						{ encoding: "utf8" },
+					).stdout ?? ""
+				).matchAll(/^\s*(\d+)\s+(\d+)/gm),
+			].map((m) => [Number(m[1]), Number(m[2])])
+		: [];
+const reservedOverlap = (start) =>
+	reservedPorts.find(([from, to]) => from <= start + 9 && to >= start);
+
+// 49152 and up is the OS's pool for outgoing connections, so the last block
+// is 49140-49149. Below 1024 is reserved for system services.
+const PORT_MIN = 1030;
+const PORT_MAX = 49140;
+const portBase = remember(
+	"portBase",
+	await ask(
+		`Port block start - a multiple of 10 from ${PORT_MIN} to ${PORT_MAX}; uses this port and the next 9\n  (api = +0, www = +1, Drizzle Studio = +8, Postgres = +9).\n  Projects you run at the same time need different blocks`,
+		pick(
+			"portBase",
+			isSkeletonDefaults ? current.portBase + 10 : current.portBase,
+		),
+		(v) => {
+			const n = Number(v);
+			const range = reservedOverlap(n);
+			if (range) {
+				say(
+					`  ${n}-${n + 9} overlaps ${range[0]}-${range[1]}, reserved by Windows (Hyper-V/WSL/Docker).`,
+				);
+			}
+			return (
+				/^\d+$/.test(v) &&
+				n % 10 === 0 &&
+				n >= PORT_MIN &&
+				n <= PORT_MAX &&
+				!range
+			);
+		},
+		`pick a multiple of 10 from ${PORT_MIN} to ${PORT_MAX} that isn't reserved`,
+	).then(Number),
+);
+const database = remember(
+	"database",
+	await ask(
+		"Postgres database name",
+		pick("database", name),
+		(v) => /^[a-z][a-z0-9_]{0,62}$/.test(v),
+		"lowercase letters, digits and _, starting with a letter",
+	),
 );
 
 const { domain: _oldDomain, ...rest } = current;
@@ -244,6 +334,8 @@ const values = { name, title, devDomain, prodDomain, portBase, database };
 // These keys first, in this order, then any others (postgresMajor, ...).
 const project = { ...values, ...rest, ...values };
 writeFileSync(projectFile, `${JSON.stringify(project, null, "\t")}\n`);
+// project.json holds every answer now; the saved draft is no longer needed.
+rmSync(draftFile, { force: true });
 say(
 	`  wrote project.json (api ${portBase}, www ${portBase + 1}, studio ${portBase + 8}, postgres ${portBase + 9})`,
 );

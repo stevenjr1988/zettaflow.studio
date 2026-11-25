@@ -128,6 +128,7 @@ Git-ignored: `.tools/`, `.pgdata/`, `caddy.exe`, every `.env`,
 
 ```
 pnpm zfs:init       set up a fresh clone as a new project
+pnpm zfs:reset      same, but start over (drop saved answers, defaults from folder name)
 pnpm dev            start the stack: www, api, postgres, caddy panes, db:studio
 pnpm stop           stop it (pg_ctl fast shutdown; kills only this repo's node/caddy)
 pnpm status         what is listening on the project's ports
