@@ -18,6 +18,29 @@ A pnpm + Turborepo monorepo in TypeScript. A Hono **api** is the backend.
   handlers (`export const GET = async () => …`) and default exports (declare
   the const, then `export default Name;`). In `.tsx` files a generic arrow
   needs a trailing comma: `const List = <T,>(props: Props<T>) => …`.
+- **Accessible: WCAG 2.2 AA at minimum.** Every UI must be fully usable with
+  a keyboard and a screen reader. Use semantic HTML before ARIA, label every
+  control, keep focus visible, and meet AA contrast. Respect user settings such
+  as `prefers-reduced-motion` and text zoom up to 200%.
+- **Mobile first, works on mobile and desktop.** Write base styles for small
+  screens and add larger layouts with `min-width` breakpoints (Tailwind's
+  `sm:`/`md:`/`lg:` prefixes). Nothing may scroll sideways at 320 CSS px.
+  Touch targets are at least 24×24 px (aim for 44×44). Support touch, mouse
+  and keyboard, and never put essential content or actions behind hover only.
+- **i18n-ready.** Projects choose their own i18n library and languages, but
+  all code must be ready for them:
+  - Never build sentences by joining strings or hard-code plural rules.
+    Keep user-facing text separate from logic.
+  - Format dates, numbers, currency and lists with `Intl`
+    (`DateTimeFormat`, `NumberFormat`, `PluralRules`, `ListFormat`), never by
+    hand.
+  - Store timestamps as UTC (`timestamptz`) and convert only for display.
+    Don't assume a currency, time zone, or name/address format.
+  - Use logical CSS (Tailwind `ms-`/`me-`/`ps-`/`pe-`/`start-`/`end-`, not
+    `ml-`/`mr-`/`left-`/`right-`) so right-to-left works. Set `lang` (and
+    `dir`) on `<html>`, and leave room for longer translated text.
+  - api errors return stable machine-readable codes that clients translate,
+    not finished English sentences.
 
 ## Architecture
 
