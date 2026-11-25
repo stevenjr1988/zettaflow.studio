@@ -29,6 +29,14 @@ A pnpm + Turborepo monorepo in TypeScript. A Hono **api** is the backend.
   `sm:`/`md:`/`lg:` prefixes). Nothing may scroll sideways at 320 CSS px.
   Touch targets are at least 24×24 px (aim for 44×44). Support touch, mouse
   and keyboard, and never put essential content or actions behind hover only.
+- **Third-party licenses.** Anything copied or generated into the repo from
+  someone else (code, data, icons, fonts, images) lives in its own folder with
+  the upstream license text verbatim in `LICENSE` and a `NOTICE` saying what it
+  is, where it came from (URL and version) and its license. Set the
+  `package.json` `license` field to match. List it in
+  `THIRD-PARTY-NOTICES.md`: the skeleton's in `.zfs/`, a project's in the root,
+  which links to the skeleton's. Check the license allows our use before adding
+  anything. npm dependencies need no entry.
 - **i18n-ready.** Projects choose their own i18n library and languages, but
   all code must be ready for them:
   - Never build sentences by joining strings or hard-code plural rules.
@@ -94,6 +102,7 @@ packages/uswds/    @zfs/uswds: USWDS colors as Tailwind theme variables, `*-uswd
 packages/tsconfig/ @zfs/tsconfig: base / node / next presets
 project.json       name, title, devDomain, prodDomain, portBase, database, postgresMajor
 dev.ps1            dev stack controller (Windows)
+THIRD-PARTY-NOTICES.md  project's third-party list; links to .zfs/THIRD-PARTY-NOTICES.md (skeleton's)
 Caddyfile          dev HTTPS reverse proxy (values from project.json)
 ```
 

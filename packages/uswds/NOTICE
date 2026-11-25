@@ -1,0 +1,17 @@
+@zfs/uswds
+
+The color values in src/palette.css and the color roles in src/theme.css come
+from the U.S. Web Design System (USWDS) v3.14.0 by the General Services
+Administration, https://designsystem.digital.gov/, from
+https://github.com/uswds/uswds (packages/uswds-tokens/colors and
+packages/uswds-core/src/styles/settings/_settings-color.scss).
+
+These files are in the public domain in the United States, and copyright is
+waived worldwide through the CC0 1.0 Universal Public Domain Dedication
+(see LICENSE, the upstream LICENSE.md at that tag). None of the USWDS parts
+under other licenses (fonts, icons, normalize files) are included here.
+
+Using these colors does not imply endorsement by GSA, and grants no rights in
+GSA trademarks.
+
+The generator script (scripts/generate.mjs) is part of the zfs skeleton.

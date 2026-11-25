@@ -1,6 +1,8 @@
 // Generates src/palette.css and src/theme.css from the USWDS design tokens.
 // Run: pnpm --filter @zfs/uswds generate
-// To update, change USWDS_VERSION to a newer release tag and run it again.
+// To update, change USWDS_VERSION to a newer release tag and run it again,
+// then update the version in NOTICE and in .zfs/THIRD-PARTY-NOTICES.md.
+// It also refreshes LICENSE (the upstream LICENSE.md at that tag).
 
 import { writeFile } from "node:fs/promises";
 
@@ -112,7 +114,9 @@ const buildTheme = async (known) => {
 
 const { css, known } = await buildPalette();
 const theme = await buildTheme(known);
+const license = await fetchOk(`${RAW}/LICENSE.md`, "text");
 const dir = new URL("../src/", import.meta.url);
 await writeFile(new URL("palette.css", dir), css);
 await writeFile(new URL("theme.css", dir), theme);
+await writeFile(new URL("../LICENSE", import.meta.url), license);
 console.log(`USWDS ${USWDS_VERSION}: ${known.size} palette colors written.`);
