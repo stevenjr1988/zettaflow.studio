@@ -8,7 +8,7 @@
 		"node": ">=26.8.2"
 	},
 	"scripts": {
-		"zfs:new": "node .zfs/new-project.mjs",
+		"zfs:init": "node .zfs/init.mjs",
 		"dev": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 start && pnpm db:studio",
 		"stop": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 stop",
 		"status": "powershell -NoProfile -ExecutionPolicy Bypass -File dev.ps1 status",

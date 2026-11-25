@@ -1,7 +1,8 @@
 {
 	"name": "zfs",
 	"title": "zettaflow.studio",
-	"domain": "zettaflow.studio.local",
+	"devDomain": "zettaflow.studio.local",
+	"prodDomain": "zettaflow.studio",
 	"portBase": 30000,
 	"database": "zfs",
 	"postgresMajor": 19

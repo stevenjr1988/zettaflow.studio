@@ -11,9 +11,12 @@
         api       http://127.0.0.1:<portBase>        (Hono)
         www       http://127.0.0.1:<portBase + 1>    (Next.js)
         postgres  127.0.0.1:<portBase + 9>  (portable binaries in .tools\pgsql)
-        caddy     https://<domain>  (+ api.)
+        caddy     https://<devDomain>  (+ api.)
 
-    portBase, domain, name, database and postgresMajor come from project.json.
+    `pnpm dev` then runs Drizzle Studio (`pnpm db:studio`) in the calling
+    terminal on 127.0.0.1:<portBase + 8>.
+
+    portBase, devDomain, name, database and postgresMajor come from project.json.
     The Node version is pinned in .node-version; start warns on a mismatch.
 
 .EXAMPLE
@@ -69,7 +72,11 @@ $pgBin = Join-Path $root '.tools\pgsql\bin'
 $pgData = Join-Path $root '.pgdata'
 $pgPort = $portBase + 9
 
-$ports = $apiPort, $wwwPort, $pgPort, 80, 443
+# Drizzle Studio (`pnpm db:studio`, run by `pnpm dev` after the panes open)
+# sits just below Postgres. Listed here so stop/status/stale-clearing cover it.
+$studioPort = $portBase + 8
+
+$ports = $apiPort, $wwwPort, $studioPort, $pgPort, 80, 443
 
 # Pane titles carry the project name, so `stop` in one project can never
 # close another project's window.
@@ -270,7 +277,7 @@ function Stop-Stack {
 }
 
 function Show-Status {
-    $names = @{ $apiPort = 'api'; $wwwPort = 'www'; $pgPort = 'postgres'; 80 = 'caddy:http'; 443 = 'caddy:https' }
+    $names = @{ $apiPort = 'api'; $wwwPort = 'www'; $studioPort = 'studio'; $pgPort = 'postgres'; 80 = 'caddy:http'; 443 = 'caddy:https' }
     $any = $false
 
     foreach ($port in $ports) {
@@ -291,8 +298,11 @@ function Show-Status {
 function Start-Stack {
     # Idempotent. Without this, repeatedly running `start` on an already-running
     # stack opens a new terminal window every time and they pile up unnoticed.
-    $up = @($ports | Where-Object { Get-PortOwner -Port $_ })
-    if ($up.Count -eq $ports.Count -and -not $Force) {
+    # Studio is left out: it runs outside the panes, and a closed Studio
+    # shouldn't make `pnpm dev` recycle a stack that is otherwise up.
+    $panePorts = @($ports | Where-Object { $_ -ne $studioPort })
+    $up = @($panePorts | Where-Object { Get-PortOwner -Port $_ })
+    if ($up.Count -eq $panePorts.Count -and -not $Force) {
         Write-Host "  stack is already running - not opening another window" -ForegroundColor Green
         Write-Host ""
         Show-Status
@@ -355,7 +365,7 @@ function Start-Stack {
     $caddyEnvFile = Join-Path $root '.tools\caddy.env'
     New-Item -ItemType Directory -Force (Split-Path $caddyEnvFile) | Out-Null
     Set-Content -Path $caddyEnvFile -Encoding ascii -Value @(
-        "ZFS_DOMAIN=$($project.domain)"
+        "ZFS_DOMAIN=$($project.devDomain)"
         "ZFS_API_PORT=$apiPort"
         "ZFS_WWW_PORT=$wwwPort"
     )
@@ -424,7 +434,7 @@ public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwPro
     Write-Host "  www       http://127.0.0.1:$wwwPort" -ForegroundColor Green
     Write-Host "  api       http://127.0.0.1:$apiPort" -ForegroundColor Green
     Write-Host "  postgres  127.0.0.1:$pgPort" -ForegroundColor Green
-    Write-Host "  caddy     https://$($project.domain)" -ForegroundColor Green
+    Write-Host "  caddy     https://$($project.devDomain)" -ForegroundColor Green
     Write-Host ""
     Write-Host "  pnpm stop   to kill it" -ForegroundColor DarkGray
 }

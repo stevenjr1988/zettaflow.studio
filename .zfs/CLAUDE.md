@@ -2,7 +2,7 @@
 
 Skeleton-owned: projects made from the skeleton don't edit this file; they
 import it from their root `CLAUDE.md` and get updates with
-`git pull upstream main`. Project-specific values (name, domain, ports) are in
+`git pull upstream main`. Project-specific values (name, domains, ports) are in
 `project.json` and the project's own `CLAUDE.md`.
 
 A pnpm + Turborepo monorepo in TypeScript. A Hono **api** is the backend.
@@ -60,13 +60,13 @@ Every route www serves lives under **`/_api_/`**:
 ## Layout
 
 ```
-.zfs/              skeleton-owned: this file, README (setup/updates), zfs:new, next launcher
+.zfs/              skeleton-owned: this file, README (setup/updates), zfs:init (init.mjs), next/studio launchers
 apps/api/          Hono server, Drizzle (src/db/schema.ts, migrations in drizzle/)
 apps/www/          Next.js App Router + Tailwind CSS v4
 packages/shared/   @zfs/shared: Zod schemas and types (ships TS source)
 packages/gmsi/     @zfs/gmsi: Material Symbols icons (generated)
 packages/tsconfig/ @zfs/tsconfig: base / node / next presets
-project.json       name, title, domain, portBase, database, postgresMajor
+project.json       name, title, devDomain, prodDomain, portBase, database, postgresMajor
 dev.ps1            dev stack controller (Windows)
 Caddyfile          dev HTTPS reverse proxy (values from project.json)
 ```
@@ -88,33 +88,34 @@ with `pg`, PostgreSQL, Biome, tsup (api build), tsx (api dev).
 
 ## Ports and names
 
-**`project.json` is the only place** name, title, domain, ports and database
+**`project.json` is the only place** name, title, domains, ports and database
 are written. Everything reads it: `dev.ps1`, the Caddyfile (`ZFS_*` values that
 `dev.ps1` writes to `.tools/caddy.env`, loaded with `caddy run --envfile`),
 `.zfs/next.mjs` (www port), the api and www. Never hard-code them elsewhere.
 The one copy is the `zfs:project` block in the root `CLAUDE.md`, which
-`pnpm zfs:new` regenerates from `project.json`; never edit it by hand.
+`pnpm zfs:init` regenerates from `project.json`; never edit it by hand.
 Never put `;` in a `dev.ps1` pane command: `wt.exe` splits on it.
 
 One block of ten ports from `portBase`, the same in dev and prod:
-**api = +0, www = +1, Postgres = +9**; +2 to +8 are free. The Postgres
+**api = +0, www = +1, Drizzle Studio = +8 (`.zfs/studio.mjs`), Postgres = +9**;
++2 to +7 are free. The Postgres
 database and role are `project.json` → `database` / `name`.
 
 ## Skeleton and updates
 
 Projects are cloned from the skeleton and keep it as the `upstream` remote
-(setup and update rules: `.zfs/README.md`; `pnpm zfs:new` sets up a fresh
+(setup and update rules: `.zfs/README.md`; `pnpm zfs:init` sets up a fresh
 clone). Skeleton-owned, so projects don't edit them: `.zfs/`, `packages/*`
 (`@zfs/*`), `dev.ps1`, the Caddyfile. Projects keep the `@zfs/*` scope.
 
 ## Environments
 
-|           | Dev (Windows 11)                                       | Prod (Ubuntu VPS behind Cloudflare)            |
-| --------- | ------------------------------------------------------ | ---------------------------------------------- |
-| Postgres  | portable binaries in `.tools/pgsql`, data in `.pgdata` | installed on the system (PostgreSQL apt repo)  |
-| Proxy     | Caddy (`caddy.exe`, `tls internal`)                    | nginx                                          |
-| Processes | `dev.ps1` → Windows Terminal panes                     | pm2                                            |
-| Domains   | `<domain>`, `api.<domain>` (from `project.json`)       | the project's real domain and `api.` subdomain |
+|           | Dev (Windows 11)                                       | Prod (Ubuntu VPS behind Cloudflare)                 |
+| --------- | ------------------------------------------------------ | --------------------------------------------------- |
+| Postgres  | portable binaries in `.tools/pgsql`, data in `.pgdata` | installed on the system (PostgreSQL apt repo)       |
+| Proxy     | Caddy (`caddy.exe`, `tls internal`)                    | nginx                                               |
+| Processes | `dev.ps1` → Windows Terminal panes                     | pm2                                                 |
+| Domains   | `<devDomain>`, `api.<devDomain>` (`project.json`)      | `<prodDomain>`, `api.<prodDomain>` (`project.json`) |
 
 No Docker. Matching versions comes from the pins above. Keep the api
 stateless: config only from env, nothing kept in memory or on local disk that
@@ -126,7 +127,7 @@ Git-ignored: `.tools/`, `.pgdata/`, `caddy.exe`, every `.env`,
 ## Commands (repo root)
 
 ```
-pnpm zfs:new        set up a fresh clone as a new project
+pnpm zfs:init       set up a fresh clone as a new project
 pnpm dev            start the stack: www, api, postgres, caddy panes, db:studio
 pnpm stop           stop it (pg_ctl fast shutdown; kills only this repo's node/caddy)
 pnpm status         what is listening on the project's ports
@@ -134,7 +135,7 @@ pnpm dev:restart
 pnpm db:init        one-off: create .pgdata, role/db, write DATABASE_URL to apps/api/.env
 pnpm db:generate    drizzle-kit generate (after editing apps/api/src/db/schema.ts)
 pnpm db:migrate     drizzle-kit migrate
-pnpm db:studio
+pnpm db:studio      Drizzle Studio on 127.0.0.1:<portBase + 8>
 pnpm typecheck      turbo; www runs `next typegen` first
 pnpm lint           biome check .
 pnpm format         biome check --write .

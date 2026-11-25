@@ -239,6 +239,9 @@ importers:
 
   apps/www:
     dependencies:
+      '@zfs/gmsi':
+        specifier: workspace:*
+        version: link:../../packages/gmsi
       '@zfs/shared':
         specifier: workspace:*
         version: link:../../packages/shared

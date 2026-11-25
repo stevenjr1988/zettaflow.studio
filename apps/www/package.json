@@ -11,6 +11,7 @@
 		"typecheck": "next typegen && tsc --noEmit"
 	},
 	"dependencies": {
+		"@zfs/gmsi": "workspace:*",
 		"@zfs/shared": "workspace:*",
 		"next": "^16.4.6",
 		"react": "^19.3.1",

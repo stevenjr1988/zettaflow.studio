@@ -11,7 +11,7 @@
 		"typecheck": "tsc --noEmit",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
-		"db:studio": "drizzle-kit studio"
+		"db:studio": "node ../../.zfs/studio.mjs"
 	},
 	"dependencies": {
 		"@hono/node-server": "^2.1.11",
