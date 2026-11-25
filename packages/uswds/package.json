@@ -1,0 +1,21 @@
+{
+	"name": "@zfs/uswds",
+	"version": "0.0.0",
+	"private": true,
+	"description": "USWDS color palette and default theme as Tailwind v4 theme variables (*-uswds-*), generated from the USWDS design tokens.",
+	"license": "CC0-1.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"style": "./src/palette.css",
+			"default": "./src/palette.css"
+		},
+		"./theme": {
+			"style": "./src/theme.css",
+			"default": "./src/theme.css"
+		}
+	},
+	"scripts": {
+		"generate": "node scripts/generate.mjs"
+	}
+}

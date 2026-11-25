@@ -21,7 +21,9 @@ A pnpm + Turborepo monorepo in TypeScript. A Hono **api** is the backend.
 - **Accessible: WCAG 2.2 AA at minimum.** Every UI must be fully usable with
   a keyboard and a screen reader. Use semantic HTML before ARIA, label every
   control, keep focus visible, and meet AA contrast. Respect user settings such
-  as `prefers-reduced-motion` and text zoom up to 200%.
+  as `prefers-reduced-motion` and text zoom up to 200%. With `uswds-*` colors,
+  text and its background must be at least 50 grades apart (e.g. `-80` on
+  `-30`); large text and UI parts at least 40.
 - **Mobile first, works on mobile and desktop.** Write base styles for small
   screens and add larger layouts with `min-width` breakpoints (Tailwind's
   `sm:`/`md:`/`lg:` prefixes). Nothing may scroll sideways at 320 CSS px.
@@ -88,6 +90,7 @@ apps/api/          Hono server, Drizzle (src/db/schema.ts, migrations in drizzle
 apps/www/          Next.js App Router + Tailwind CSS v4
 packages/shared/   @zfs/shared: Zod schemas and types (ships TS source)
 packages/gmsi/     @zfs/gmsi: Material Symbols icons (generated)
+packages/uswds/    @zfs/uswds: USWDS colors as Tailwind theme variables, `*-uswds-*` (generated)
 packages/tsconfig/ @zfs/tsconfig: base / node / next presets
 project.json       name, title, devDomain, prodDomain, portBase, database, postgresMajor
 dev.ps1            dev stack controller (Windows)

@@ -245,6 +245,9 @@ importers:
       '@zfs/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      '@zfs/uswds':
+        specifier: workspace:*
+        version: link:../../packages/uswds
       next:
         specifier: ^16.4.6
         version: 16.4.6(@types/node@26.6.6)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -312,6 +315,8 @@ importers:
         version: 7.0.2
 
   packages/tsconfig: {}
+
+  packages/uswds: {}
 
 packages:
 

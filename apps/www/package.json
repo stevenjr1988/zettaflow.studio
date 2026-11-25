@@ -12,6 +12,7 @@
 	},
 	"dependencies": {
 		"@zfs/gmsi": "workspace:*",
+		"@zfs/uswds": "workspace:*",
 		"@zfs/shared": "workspace:*",
 		"next": "^16.4.6",
 		"react": "^19.3.1",

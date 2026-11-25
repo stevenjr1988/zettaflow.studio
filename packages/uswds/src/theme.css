@@ -1,0 +1,67 @@
+/* USWDS default theme, generated from USWDS v3.14.0 by scripts/generate.mjs.
+ * Do not edit by hand. Source: https://github.com/uswds/uswds (public domain, CC0 1.0). */
+
+/* Semantic colors from the USWDS default theme, pointing at the palette.
+ * Tailwind v4: bg-uswds-primary, text-uswds-base-ink, border-uswds-error-dark …
+ * Override any of them after this import to make your own theme. */
+@import "./palette.css";
+
+@theme static {
+	--color-uswds-base-lightest: var(--color-uswds-gray-5);
+	--color-uswds-base-lighter: var(--color-uswds-gray-cool-10);
+	--color-uswds-base-light: var(--color-uswds-gray-cool-30);
+	--color-uswds-base: var(--color-uswds-gray-cool-50);
+	--color-uswds-base-dark: var(--color-uswds-gray-cool-60);
+	--color-uswds-base-darker: var(--color-uswds-gray-cool-70);
+	--color-uswds-base-darkest: var(--color-uswds-gray-90);
+	--color-uswds-base-ink: var(--color-uswds-gray-90);
+	--color-uswds-primary-lighter: var(--color-uswds-blue-10);
+	--color-uswds-primary-light: var(--color-uswds-blue-30);
+	--color-uswds-primary: var(--color-uswds-blue-60v);
+	--color-uswds-primary-vivid: var(--color-uswds-blue-warm-60v);
+	--color-uswds-primary-dark: var(--color-uswds-blue-warm-70v);
+	--color-uswds-primary-darker: var(--color-uswds-blue-warm-80v);
+	--color-uswds-secondary-lighter: var(--color-uswds-red-cool-10);
+	--color-uswds-secondary-light: var(--color-uswds-red-30);
+	--color-uswds-secondary: var(--color-uswds-red-50);
+	--color-uswds-secondary-vivid: var(--color-uswds-red-cool-50v);
+	--color-uswds-secondary-dark: var(--color-uswds-red-60v);
+	--color-uswds-secondary-darker: var(--color-uswds-red-70v);
+	--color-uswds-accent-warm-lighter: var(--color-uswds-orange-10);
+	--color-uswds-accent-warm-light: var(--color-uswds-orange-20v);
+	--color-uswds-accent-warm: var(--color-uswds-orange-30v);
+	--color-uswds-accent-warm-dark: var(--color-uswds-orange-50v);
+	--color-uswds-accent-warm-darker: var(--color-uswds-orange-60);
+	--color-uswds-accent-cool-lighter: var(--color-uswds-blue-cool-5v);
+	--color-uswds-accent-cool-light: var(--color-uswds-blue-cool-20v);
+	--color-uswds-accent-cool: var(--color-uswds-cyan-30v);
+	--color-uswds-accent-cool-dark: var(--color-uswds-blue-cool-40v);
+	--color-uswds-accent-cool-darker: var(--color-uswds-blue-cool-60v);
+	--color-uswds-error-lighter: var(--color-uswds-red-warm-10);
+	--color-uswds-error-light: var(--color-uswds-red-warm-30v);
+	--color-uswds-error: var(--color-uswds-red-warm-50v);
+	--color-uswds-error-dark: var(--color-uswds-red-60v);
+	--color-uswds-error-darker: var(--color-uswds-red-70);
+	--color-uswds-warning-lighter: var(--color-uswds-yellow-5);
+	--color-uswds-warning-light: var(--color-uswds-yellow-10v);
+	--color-uswds-warning: var(--color-uswds-gold-20v);
+	--color-uswds-warning-dark: var(--color-uswds-gold-30v);
+	--color-uswds-warning-darker: var(--color-uswds-gold-50v);
+	--color-uswds-success-lighter: var(--color-uswds-green-cool-5);
+	--color-uswds-success-light: var(--color-uswds-green-cool-20v);
+	--color-uswds-success: var(--color-uswds-green-cool-40v);
+	--color-uswds-success-dark: var(--color-uswds-green-cool-50v);
+	--color-uswds-success-darker: var(--color-uswds-green-cool-60v);
+	--color-uswds-info-lighter: var(--color-uswds-cyan-5);
+	--color-uswds-info-light: var(--color-uswds-cyan-20);
+	--color-uswds-info: var(--color-uswds-cyan-30v);
+	--color-uswds-info-dark: var(--color-uswds-cyan-40v);
+	--color-uswds-info-darker: var(--color-uswds-blue-cool-60);
+	--color-uswds-disabled-lighter: var(--color-uswds-gray-20);
+	--color-uswds-disabled-light: var(--color-uswds-gray-40);
+	--color-uswds-disabled: var(--color-uswds-gray-50);
+	--color-uswds-disabled-dark: var(--color-uswds-gray-70);
+	--color-uswds-disabled-darker: var(--color-uswds-gray-90);
+	--color-uswds-emergency: var(--color-uswds-red-warm-60v);
+	--color-uswds-emergency-dark: var(--color-uswds-red-warm-80);
+}
